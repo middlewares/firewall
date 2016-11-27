@@ -3,9 +3,10 @@
 namespace Middlewares\Tests;
 
 use Middlewares\Firewall;
+use Middlewares\Utils\Dispatcher;
+use Middlewares\Utils\CallableMiddleware;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Response;
-use mindplay\middleman\Dispatcher;
 
 class FirewallTest extends \PHPUnit_Framework_TestCase
 {
@@ -29,9 +30,9 @@ class FirewallTest extends \PHPUnit_Framework_TestCase
         $request = new ServerRequest(['REMOTE_ADDR' => $ip]);
         $response = (new Dispatcher([
             (new Firewall($whitelist))->blacklist($blacklist),
-            function () {
+            new CallableMiddleware(function () {
                 return new Response();
-            },
+            }),
         ]))->dispatch($request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
