@@ -27,9 +27,9 @@ class FirewallTest extends \PHPUnit_Framework_TestCase
     {
         $request = Factory::createServerRequest(['REMOTE_ADDR' => $ip]);
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new Firewall($whitelist))->blacklist($blacklist),
-        ]))->dispatch($request);
+        ], $request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertEquals($status, $response->getStatusCode());
