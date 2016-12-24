@@ -4,11 +4,11 @@ namespace Middlewares;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 use M6Web\Component\Firewall\Firewall as IpFirewall;
 
-class Firewall implements ServerMiddlewareInterface
+class Firewall implements MiddlewareInterface
 {
     /**
      * @var array|null
