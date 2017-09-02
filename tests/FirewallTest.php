@@ -2,10 +2,10 @@
 
 namespace Middlewares\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Middlewares\Firewall;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
+use PHPUnit\Framework\TestCase;
 
 class FirewallTest extends TestCase
 {
@@ -23,6 +23,10 @@ class FirewallTest extends TestCase
 
     /**
      * @dataProvider firewallProvider
+     * @param mixed $ip
+     * @param mixed $whitelist
+     * @param mixed $blacklist
+     * @param mixed $status
      */
     public function testFirewall($ip, $whitelist, $blacklist, $status)
     {
