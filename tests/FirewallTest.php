@@ -2,11 +2,12 @@
 
 namespace Middlewares\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Middlewares\Firewall;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
 
-class FirewallTest extends \PHPUnit_Framework_TestCase
+class FirewallTest extends TestCase
 {
     public function firewallProvider()
     {
