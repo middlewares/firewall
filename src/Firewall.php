@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares;
 
@@ -27,8 +28,6 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Constructor. Set the whitelist.
-     *
-     * @param array $whitelist
      */
     public function __construct(array $whitelist = null)
     {
@@ -37,12 +36,8 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Set ips not allowed.
-     *
-     * @param array $blacklist
-     *
-     * @return self
      */
-    public function blacklist(array $blacklist)
+    public function blacklist(array $blacklist): self
     {
         $this->blacklist = $blacklist;
 
@@ -51,12 +46,8 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Set the attribute name to get the client ip.
-     *
-     * @param string $ipAttribute
-     *
-     * @return self
      */
-    public function ipAttribute($ipAttribute)
+    public function ipAttribute(string $ipAttribute): self
     {
         $this->ipAttribute = $ipAttribute;
 
@@ -65,13 +56,8 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Process a server request and return a response.
-     *
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     *
-     * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $ip = $this->getIp($request);
 
@@ -100,12 +86,8 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Get the client ip.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return string
      */
-    private function getIp(ServerRequestInterface $request)
+    private function getIp(ServerRequestInterface $request): string
     {
         $server = $request->getServerParams();
 
