@@ -27,7 +27,7 @@ composer require middlewares/firewall
 
 ```php
 $dispatcher = new Dispatcher([
-	(new Middlewares\Firewall(['123.0.0.*']))
+    (new Middlewares\Firewall(['123.0.0.*']))
         ->blacklist([
             '123.0.0.1',
             '123.0.0.2',
