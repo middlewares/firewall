@@ -31,7 +31,7 @@ class FirewallTest extends TestCase
             [
                 (new Firewall($whitelist))->blacklist($blacklist),
             ],
-            Factory::createServerRequest(['REMOTE_ADDR' => $ip])
+            Factory::createServerRequest('GET', '/', ['REMOTE_ADDR' => $ip])
         );
 
         $this->assertEquals($status, $response->getStatusCode());
@@ -43,7 +43,7 @@ class FirewallTest extends TestCase
             [
                 (new Firewall(['123.0.0.*']))->ipAttribute('client-ip'),
             ],
-            Factory::createServerRequest()->withAttribute('client-ip', '123.0.0.1')
+            Factory::createServerRequest('GET', '/')->withAttribute('client-ip', '123.0.0.1')
         );
 
         $this->assertEquals(200, $response->getStatusCode());
