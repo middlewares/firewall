@@ -3,9 +3,8 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Factory;
 use M6Web\Component\Firewall\Firewall as IpFirewall;
-use Psr\Http\Message\ResponseFactoryInterface;
+use Middlewares\Utils\Traits\HasResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,6 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Firewall implements MiddlewareInterface
 {
+    use HasResponseFactory;
+
     /**
      * @var array|null
      */
@@ -27,11 +28,6 @@ class Firewall implements MiddlewareInterface
      * @var string|null
      */
     private $ipAttribute;
-
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
 
     /**
      * Constructor. Set the whitelist.
@@ -62,16 +58,6 @@ class Firewall implements MiddlewareInterface
     }
 
     /**
-     * Set the response factory used.
-     */
-    public function responseFactory(ResponseFactoryInterface $responseFactory): self
-    {
-        $this->responseFactory = $responseFactory;
-
-        return $this;
-    }
-
-    /**
      * Process a server request and return a response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -79,9 +65,7 @@ class Firewall implements MiddlewareInterface
         $ip = $this->getIp($request);
 
         if (empty($ip)) {
-            $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
-
-            return $responseFactory->createResponse(403);
+            return $this->createResponse(403);
         }
 
         $firewall = new IpFirewall();
@@ -97,9 +81,7 @@ class Firewall implements MiddlewareInterface
         $firewall->setIpAddress($ip);
 
         if (!$firewall->handle()) {
-            $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
-
-            return $responseFactory->createResponse(403);
+            return $this->createResponse(403);
         }
 
         return $handler->handle($request);
