@@ -64,7 +64,7 @@ $dispatcher = new Dispatcher([
 
 #### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
 
-A PSR-17 factory to create the `403` responses.
+A PSR-17 factory to create `403` responses.
 
 ---
 
