@@ -5,6 +5,8 @@ namespace Middlewares;
 
 use M6Web\Component\Firewall\Firewall as IpFirewall;
 use Middlewares\Utils\Traits\HasResponseFactory;
+use Middlewares\Utils\Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -32,9 +34,10 @@ class Firewall implements MiddlewareInterface
     /**
      * Constructor. Set the whitelist.
      */
-    public function __construct(array $whitelist = null)
+    public function __construct(array $whitelist = null, ResponseFactoryInterface $responseFactory = null)
     {
         $this->whitelist = $whitelist;
+        $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
     }
 
     /**
