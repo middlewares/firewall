@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Middlewares;
 
 use M6Web\Component\Firewall\Firewall as IpFirewall;
-use Middlewares\Utils\Traits\HasResponseFactory;
 use Middlewares\Utils\Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -14,8 +13,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Firewall implements MiddlewareInterface
 {
-    use HasResponseFactory;
-
     /**
      * @var array|null
      */
@@ -30,6 +27,11 @@ class Firewall implements MiddlewareInterface
      * @var string|null
      */
     private $ipAttribute;
+
+    /**
+     * @var ResponseFactoryInterface
+     */
+    private $responseFactory;
 
     /**
      * Constructor. Set the whitelist.
@@ -68,7 +70,7 @@ class Firewall implements MiddlewareInterface
         $ip = $this->getIp($request);
 
         if (empty($ip)) {
-            return $this->createResponse(403);
+            return $this->responseFactory->createResponse(403);
         }
 
         $firewall = new IpFirewall();
@@ -84,7 +86,7 @@ class Firewall implements MiddlewareInterface
         $firewall->setIpAddress($ip);
 
         if (!$firewall->handle()) {
-            return $this->createResponse(403);
+            return $this->responseFactory->createResponse(403);
         }
 
         return $handler->handle($request);
