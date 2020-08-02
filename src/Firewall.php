@@ -77,6 +77,8 @@ class Firewall implements MiddlewareInterface
 
         if (!empty($this->whitelist)) {
             $firewall->addList($this->whitelist, 'whitelist', true);
+        } else {
+            $firewall->setDefaultState(true);
         }
 
         if (!empty($this->blacklist)) {
