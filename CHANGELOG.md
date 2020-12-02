@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2020-12-02
+### Added
+- Support for PHP 8
+
 ## [2.0.1] - 2020-08-02
 ### Fixed
 - Fixes a bug that if only backlist is supplied incorrectly getting 403 error [#1]
@@ -62,6 +66,7 @@ First version
 
 [#1]: https://github.com/middlewares/firewall/issues/1
 
+[2.0.2]: https://github.com/middlewares/firewall/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/middlewares/firewall/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/middlewares/firewall/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/middlewares/firewall/compare/v1.0.0...v1.1.0
