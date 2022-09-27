@@ -5,7 +5,6 @@ namespace Middlewares;
 
 use IPLib\Address\AddressInterface;
 use IPLib\Factory as IPFactory;
-use IPLib\Range\Pattern;
 use IPLib\Range\RangeInterface;
 use Middlewares\Utils\Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -104,7 +103,8 @@ class Firewall implements MiddlewareInterface
      *
      * @return RangeInterface
      */
-    protected function createRangeInstance(string $range): RangeInterface {
+    protected function createRangeInstance(string $range): RangeInterface
+    {
         if (strpos($range, '-') !== false) {
             $parts = explode('-', $range, 2);
             return IPFactory::getRangesFromBoundaries($parts[0], $parts[1]);
@@ -136,11 +136,12 @@ class Firewall implements MiddlewareInterface
      * Checks if IP address is in list
      *
      * @param AddressInterface $address IP address to check
-     * @param array $list List of addresses to check
+     * @param array            $list    List of addresses to check
      *
      * @return bool
      */
-    private function isAddressInList(AddressInterface $address, array $list): bool {
+    private function isAddressInList(AddressInterface $address, array $list): bool
+    {
         /**
          * @var RangeInterface $ipRange
          */
@@ -179,6 +180,7 @@ class Firewall implements MiddlewareInterface
             return !$this->isAddressInList($address, $this->blacklist);
         }
 
-        return $this->isAddressInList($address, $this->whitelist) && !$this->isAddressInList($address, $this->blacklist);
+        return $this->isAddressInList($address, $this->whitelist) &&
+               !$this->isAddressInList($address, $this->blacklist);
     }
 }
