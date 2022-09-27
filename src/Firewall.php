@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use M6Web\Component\Firewall\Firewall as IpFirewall;
+use IPLib\Address\AddressInterface;
+use IPLib\Factory as IPFactory;
+use IPLib\Range\Pattern;
+use IPLib\Range\RangeInterface;
 use Middlewares\Utils\Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -73,21 +76,7 @@ class Firewall implements MiddlewareInterface
             return $this->responseFactory->createResponse(403);
         }
 
-        $firewall = new IpFirewall();
-
-        if (!empty($this->whitelist)) {
-            $firewall->addList($this->whitelist, 'whitelist', true);
-        } else {
-            $firewall->setDefaultState(true);
-        }
-
-        if (!empty($this->blacklist)) {
-            $firewall->addList($this->blacklist, 'blacklist', false);
-        }
-
-        $firewall->setIpAddress($ip);
-
-        if (!$firewall->handle()) {
+        if (!$this->isIpAccessible($ip)) {
             return $this->responseFactory->createResponse(403);
         }
 
@@ -106,5 +95,90 @@ class Firewall implements MiddlewareInterface
         }
 
         return isset($server['REMOTE_ADDR']) ? $server['REMOTE_ADDR'] : '';
+    }
+
+    /**
+     * Create range class instance from string
+     *
+     * @param string $range
+     *
+     * @return RangeInterface
+     */
+    protected function createRangeInstance(string $range): RangeInterface {
+        if (strpos($range, '-') !== false) {
+            $parts = explode('-', $range, 2);
+            return IPFactory::getRangesFromBoundaries($parts[0], $parts[1]);
+        }
+
+        return IPFactory::parseRangeString($range);
+    }
+
+    /**
+     * Convert IP list to range array
+     *
+     * @param array|null $list Data that needs to be converted
+     *
+     * @return array<RangeInterface>
+     */
+    private function convertListToRangeArray(?array $list): array
+    {
+        if ($list === null) {
+            return [];
+        }
+
+        return array_map(
+            [$this, 'createRangeInstance'],
+            $list
+        );
+    }
+
+    /**
+     * Checks if IP address is in list
+     *
+     * @param AddressInterface $address IP address to check
+     * @param array $list List of addresses to check
+     *
+     * @return bool
+     */
+    private function isAddressInList(AddressInterface $address, array $list): bool {
+        /**
+         * @var RangeInterface $ipRange
+         */
+        foreach ($this->convertListToRangeArray($list) as $ipRange) {
+            if ($ipRange->contains($address)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if IP by current addresses is accessible
+     *
+     * @param string $ip Current IP
+     *
+     * @return bool
+     */
+    private function isIpAccessible(string $ip): bool
+    {
+        if (empty($this->blacklist) && empty($this->whitelist)) {
+            return true;
+        }
+
+        $address = IPFactory::parseAddressString($ip);
+        if ($address === null) {
+            return false;
+        }
+
+        if (empty($this->blacklist)) {
+            return $this->isAddressInList($address, $this->whitelist);
+        }
+
+        if (empty($this->whitelist)) {
+            return !$this->isAddressInList($address, $this->blacklist);
+        }
+
+        return $this->isAddressInList($address, $this->whitelist) && !$this->isAddressInList($address, $this->blacklist);
     }
 }
