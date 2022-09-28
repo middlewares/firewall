@@ -5,7 +5,7 @@
 ![Testing][ico-ga]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Middleware to provide IP filtering using [M6Web/Firewall](https://github.com/M6Web/Firewall).
+Middleware to provide IP filtering.
 
 ## Requirements
 
