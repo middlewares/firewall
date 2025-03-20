@@ -10,7 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 class FirewallTest extends TestCase
 {
-    public function firewallProvider()
+    /**
+     * @return array<array<string|string[]|int>>
+     */
+    public function firewallProvider(): array
     {
         return [
             ['123.234.123.10', ['123.234.123.10'], [], 200],
@@ -24,8 +27,11 @@ class FirewallTest extends TestCase
 
     /**
      * @dataProvider firewallProvider
+     *
+     * @param string[] $whitelist
+     * @param string[] $blacklist
      */
-    public function testFirewall(string $ip, array $whitelist, array $blacklist, int $status)
+    public function testFirewall(string $ip, array $whitelist, array $blacklist, int $status): void
     {
         $response = Dispatcher::run(
             [
@@ -37,7 +43,7 @@ class FirewallTest extends TestCase
         $this->assertEquals($status, $response->getStatusCode());
     }
 
-    public function testIpAttribute()
+    public function testIpAttribute(): void
     {
         $response = Dispatcher::run(
             [
