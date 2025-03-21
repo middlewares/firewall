@@ -15,37 +15,32 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Firewall implements MiddlewareInterface
 {
-    /**
-     * @var array|null
-     */
+    /** @var string[] */
     private $whitelist;
 
-    /**
-     * @var array|null
-     */
-    private $blacklist;
+    /** @var string[] */
+    private $blacklist = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $ipAttribute;
 
-    /**
-     * @var ResponseFactoryInterface
-     */
     private $responseFactory;
 
     /**
      * Constructor. Set the whitelist.
+     *
+     * @param string[]|null $whitelist
      */
-    public function __construct(array $whitelist = null, ResponseFactoryInterface $responseFactory = null)
+    public function __construct(?array $whitelist = null, ?ResponseFactoryInterface $responseFactory = null)
     {
-        $this->whitelist = $whitelist;
+        $this->whitelist = $whitelist ?? [];
         $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
     }
 
     /**
      * Set ips not allowed.
+     *
+     * @param string[] $blacklist
      */
     public function blacklist(array $blacklist): self
     {
@@ -98,25 +93,24 @@ class Firewall implements MiddlewareInterface
 
     /**
      * Create range class instance from string
-     *
-     * @param string $range
-     *
-     * @return RangeInterface
      */
     protected function createRangeInstance(string $range): RangeInterface
     {
         if (strpos($range, '-') !== false) {
             $parts = explode('-', $range, 2);
+
+            /* @phpstan-ignore-next-line */
             return IPFactory::getRangesFromBoundaries($parts[0], $parts[1]);
         }
 
+        /* @phpstan-ignore-next-line */
         return IPFactory::parseRangeString($range);
     }
 
     /**
      * Convert IP list to range array
      *
-     * @param array|null $list Data that needs to be converted
+     * @param string[]|null $list Data that needs to be converted
      *
      * @return array<RangeInterface>
      */
@@ -136,15 +130,12 @@ class Firewall implements MiddlewareInterface
      * Checks if IP address is in list
      *
      * @param AddressInterface $address IP address to check
-     * @param array            $list    List of addresses to check
+     * @param string[]         $list    List of addresses to check
      *
      * @return bool
      */
     private function isAddressInList(AddressInterface $address, array $list): bool
     {
-        /**
-         * @var RangeInterface $ipRange
-         */
         foreach ($this->convertListToRangeArray($list) as $ipRange) {
             if ($ipRange->contains($address)) {
                 return true;
@@ -163,7 +154,7 @@ class Firewall implements MiddlewareInterface
      */
     private function isIpAccessible(string $ip): bool
     {
-        if (empty($this->blacklist) && empty($this->whitelist)) {
+        if (!count($this->blacklist) && !count($this->whitelist)) {
             return true;
         }
 
@@ -172,11 +163,11 @@ class Firewall implements MiddlewareInterface
             return false;
         }
 
-        if (empty($this->blacklist)) {
+        if (count($this->blacklist) > 0 && !count($this->whitelist)) {
             return $this->isAddressInList($address, $this->whitelist);
         }
 
-        if (empty($this->whitelist)) {
+        if (count($this->whitelist) > 0 && !count($this->blacklist)) {
             return !$this->isAddressInList($address, $this->blacklist);
         }
 
