@@ -15,14 +15,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Firewall implements MiddlewareInterface
 {
+    /** @var string[] */
     private $whitelist;
 
     /** @var string[] */
-    private $blacklist;
+    private $blacklist = [];
 
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $ipAttribute;
 
     private $responseFactory;
@@ -30,12 +29,11 @@ class Firewall implements MiddlewareInterface
     /**
      * Constructor. Set the whitelist.
      *
-     * @param string[]|null                 $whitelist
-     * @param ResponseFactoryInterface|null $responseFactory
+     * @param string[]|null $whitelist
      */
     public function __construct(?array $whitelist = null, ?ResponseFactoryInterface $responseFactory = null)
     {
-        $this->whitelist = $whitelist;
+        $this->whitelist = $whitelist ?? [];
         $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
     }
 
@@ -105,6 +103,7 @@ class Firewall implements MiddlewareInterface
             return IPFactory::getRangesFromBoundaries($parts[0], $parts[1]);
         }
 
+        /* @phpstan-ignore-next-line */
         return IPFactory::parseRangeString($range);
     }
 
@@ -155,7 +154,7 @@ class Firewall implements MiddlewareInterface
      */
     private function isIpAccessible(string $ip): bool
     {
-        if (empty($this->blacklist) && empty($this->whitelist)) {
+        if (!count($this->blacklist) && !count($this->whitelist)) {
             return true;
         }
 
@@ -164,11 +163,11 @@ class Firewall implements MiddlewareInterface
             return false;
         }
 
-        if (empty($this->blacklist)) {
+        if (count($this->blacklist) > 0 && !count($this->whitelist)) {
             return $this->isAddressInList($address, $this->whitelist);
         }
 
-        if (empty($this->whitelist)) {
+        if (count($this->whitelist) > 0 && !count($this->blacklist)) {
             return !$this->isAddressInList($address, $this->blacklist);
         }
 
