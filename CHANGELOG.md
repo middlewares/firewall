@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 2025-03-21
+### Added
+- Better support for types.
+
 ## [2.0.4] - 2025-01-16
 ### Fixed
 - Support for Php 8.4 [#17].
@@ -81,6 +85,7 @@ First version
 [#7]: https://github.com/middlewares/firewall/issues/7
 [#17]: https://github.com/middlewares/firewall/issues/17
 
+[2.1.0]: https://github.com/middlewares/firewall/compare/v2.0.4...v2.1.0
 [2.0.4]: https://github.com/middlewares/firewall/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/middlewares/firewall/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/middlewares/firewall/compare/v2.0.1...v2.0.2
